@@ -1,0 +1,49 @@
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => {
+	res.send(`
+	<div>
+		<form method="POST">
+			<input name="email" placeholder="email"/>
+			<input name="password" placeholder="password"/>
+			<input name="passwordConfirmation" placeholder="password confirmation"/>
+			<button>Sign Up</button>
+		</form>
+	</div
+	`);
+});
+
+//Instead of having parse logic within every post request, we want to extract that out into a function that we can reuse
+//These functions are called Middleware - a function that does some pre-processing or pre-computing on the 'req' and 'res' objects. These are the primary means of code reuse for Express
+//A Middleware function always has three arguments - req object, res object, and a next function
+const bodyParser = (req, res, next) => {
+	//First, we only want to use this when we use the POST method, so we wrap this code in an if statement for that condition
+	if (req.method === 'POST') {
+		//Following this, we cut and paste our parsing code from earlier to here
+		req.on('data', (data) => {
+			const parsedData = data.toString('utf8').split('&');
+			const formData = {};
+			for (item of parsedData) {
+				const [ key, value ] = item.split('=');
+				formData[key] = value;
+			}
+			//instead of console.logging the formData, we will save that as the body property of our request object
+			req.body = formData;
+			//Finally, we call the next function. This means that we will pass our altered req and res objects into the callback function in our .post listener
+			next();
+		});
+		//if this isn't a .post listener, we simply send it straight to our next function
+	} else {
+		next();
+	}
+};
+//Now, for our .post() method, we include the Middleware function for parsing as a middle argument. We can have several Middleware functions that we tack on inbetween the path and the final callback function
+app.post('/', bodyParser, (req, res) => {
+	//now, instead of console.logging the formData, we console.log the req.body that we made equal to the formData in our Middleware function
+	console.log(req.body);
+	res.send('Account Created!!!');
+});
+
+app.listen(3000, () => {
+	console.log('Listening');
+});

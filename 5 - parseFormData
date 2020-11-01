@@ -1,0 +1,40 @@
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => {
+	res.send(`
+	<div>
+		<form method="POST">
+			<input name="email" placeholder="email"/>
+			<input name="password" placeholder="password"/>
+			<input name="passwordConfirmation" placeholder="password confirmation"/>
+			<button>Sign Up</button>
+		</form>
+	</div
+	`);
+});
+
+app.post('/', (req, res) => {
+	//To parse the formdata, we need to turn on the event listener for our request object by using req.on
+	//Within req.on(), we listen for 'data' and then use a callback function that we pass the data into
+	req.on('data', (data) => {
+		//First, we need to parse the Buffer raw data into string using UTF-8
+		//This turns all of our form data into one long string with &'s separating the different name/value properties. Therefore, we split it on the & to get an array with each piece of information we want
+		const parsedData = data.toString('utf8').split('&');
+		//Now, we create an empty formData object to pass this information into
+		const formData = {};
+		//We now loop over the parsedData array
+		for (item of parsedData) {
+			//We destructure key and value from each item by splitting the item on the = sign, separating the property name from the value
+			const [ key, value ] = item.split('=');
+			//We then add the key and value pair to our formData obejct
+			formData[key] = value;
+		}
+		//Finally, we console.log the formData and look for it in the terminal
+		console.log(formData);
+	});
+	res.send('Account Created!!!');
+});
+
+app.listen(3000, () => {
+	console.log('Listening');
+});
