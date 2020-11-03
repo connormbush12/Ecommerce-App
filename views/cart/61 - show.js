@@ -1,10 +1,15 @@
 const layout = require('../layout');
 
 module.exports = ({ items }) => {
+    //We imported HTML and styling from the course.
+    //In order to show our total price, we calculate it using a for...of loop
+    //We make totalPrice a let variable and set it to 0 initially
     let totalPrice = 0;
     for (item of items) {
+        //Then, we add the current item in the loop's quantity*price to the total price
         totalPrice += item.quantity * item.product.price;
     }
+    //Total price is included at the bottom of the HTML
   const renderedItems = items
     .map(item => {
       return `
