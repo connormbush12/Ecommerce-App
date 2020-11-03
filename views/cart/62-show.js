@@ -6,6 +6,7 @@ module.exports = ({ items }) => {
         totalPrice += item.quantity * item.product.price;
     }
   const renderedItems = items
+  //When we try to delete an item, we need that to be a POST form submission. We also need the ID of the item that we are trying to delete, so we add that as a hidden value that we can pull out from the form submission. Finally, for this one, we change the path using the action attribute so that it's clear to whomever is reading our code that we are trying to delete an item.
     .map(item => {
       return `
         <div class="cart-item message">
